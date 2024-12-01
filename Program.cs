@@ -15,13 +15,13 @@ class Program
     {
         Init();
 
-        Log.Information("=== Служба мониторинга системных ресурсов запущена ===");
+        Log.Information("[State] === Служба мониторинга системных ресурсов запущена ===");
 
         // Обработка остановки приложения
         using var cts = new CancellationTokenSource();
         Console.CancelKeyPress += (sender, eventArgs) =>
         {
-            Log.Information("Инициирован процесс завершения...");
+            Log.Information("[State] Инициирован процесс завершения...");
             eventArgs.Cancel = true;
             cts.Cancel();
         };
@@ -32,7 +32,7 @@ class Program
             {
                 var logMessage = monitor.GetLogs();
                 Log.Information(logMessage);
-                Console.WriteLine($"{DateTime.Now}.  {logMessage}");
+                Console.WriteLine($"[Process] {DateTime.Now}.  {logMessage}");
 
                 // Ожидание до следующего сбора данных
                 await Task.Delay(TimeSpan.FromSeconds(interval), cts.Token);
@@ -44,12 +44,12 @@ class Program
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Произошла неожиданная ошибка.");
+            Log.Error(ex, "[State] Произошла неожиданная ошибка.");
             Console.WriteLine($"[ERROR] {ex.Message}");
         }
         finally
         {
-            Log.Information("=== Служба мониторинга системных ресурсов остановлена ===");
+            Log.Information("[State] === Служба мониторинга системных ресурсов остановлена ===");
             Log.CloseAndFlush();
         }
     }

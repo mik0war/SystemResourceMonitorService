@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 
 public class AlertService(IConfiguration configuration)
 {
@@ -17,12 +18,17 @@ public class AlertService(IConfiguration configuration)
             using var mailMessage = _smtpSettings.GetMailMessage(subject, body);
 
             smtpClient.Send(mailMessage);
-            
-            Console.WriteLine($"[ALERT] Email отправлен.  {subject}");
+
+            var message = $"[ALERT] Email отправлен.  {subject}";
+
+            Console.WriteLine(message);
+            Log.Information(message);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[ERROR] Не удалось отправить email.  {ex.Message}");
+            var message = $"[ERROR] Не удалось отправить email.  {ex.Message}";
+            Console.WriteLine(message);
+            Log.Error(message);
         }
     }
 }
@@ -37,7 +43,7 @@ public class SmtpSettings
 
     public string From { get; set; }
 
-    public string To { private get; set; }
+    public string To { get; set; }
 
 
     public MailMessage GetMailMessage(string subject, string body)
@@ -65,3 +71,5 @@ public class SmtpSettings
         return client;
     }
 }
+
+
